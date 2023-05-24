@@ -1,11 +1,11 @@
-#Robot LLC 
 import pymodbus
+import serial
 from pymodbus.pdu import ModbusRequest
-from pymodbus.client.serial import ModbusSerialClient as ModbusClient
+from pymodbus.client.sync import ModbusSerialClient as ModbusClient #initialize a serial RTU client instance
 from pymodbus.transaction import ModbusRtuFramer
 import time
 
-client = ModbusClient(method='rtu', port='COM5',  baudrate=57600, timeout = 3, parity = 'N', stopbits=1,  bytesize=8)
+client= ModbusClient(method = "rtu", port="/dev/ttyUSB1",stopbits = 1, bytesize = 8, parity = 'N', baudrate= 9600)
 connection = client.connect()
 print(connection)
 
@@ -26,11 +26,11 @@ def reset_counter():
     write_registers(4, 0, 23)  # Сброс флага очистки счетчика импульсов заднего мотора по адресу 23
 
 def read_registers(start_address, count, slave_id):
-    read_reg = client.read_input_registers(start_address, count, slave_id)
+    read_reg = client.read_input_registers(start_address, count, unit=slave_id)
     return read_reg
 
 def write_registers(address, value, slave_id):
-    write_reg = client.write_registers(address,value, slave_id)
+    write_reg = client.write_registers(address,value, unit=slave_id)
     return write_reg
 
 def change_dir(dir0, dir1, dir2, dir3):
